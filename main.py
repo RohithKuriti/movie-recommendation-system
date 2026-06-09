@@ -144,7 +144,47 @@ def movies_by_genre():
         print(movie[0])
 
     conn.close()
+def recommend_movies():
+    conn = sqlite3.connect("movies.db")
+    cursor = conn.cursor()
 
+    print("\nUsers:")
+
+    cursor.execute("SELECT * FROM users")
+
+    users = cursor.fetchall()
+
+    for user in users:
+        print(user)
+
+    user_id = int(input("Enter User ID: "))
+
+    cursor.execute("""
+        SELECT m.title,
+               AVG(r.rating) as avg_rating
+        FROM movies m
+        JOIN ratings r
+        ON m.movie_id = r.movie_id
+        WHERE m.movie_id NOT IN (
+            SELECT movie_id
+            FROM ratings
+            WHERE user_id = ?
+        )
+        GROUP BY m.movie_id
+        ORDER BY avg_rating DESC
+    """, (user_id,))
+
+    recommendations = cursor.fetchall()
+
+    print("\nRecommended Movies:")
+
+    if recommendations:
+        for movie in recommendations:
+            print(f"{movie[0]} -> Rating {movie[1]:.2f}")
+    else:
+        print("No recommendations available.")
+
+    conn.close()
 while True:
     print("\n===== Movie Recommendation System =====")
     print("1. Add Genre")
@@ -153,7 +193,8 @@ while True:
     print("4. Rate Movie")
     print("5. View Top Rated Movies")
     print("6. Movies By Genre")
-    print("7. Exit")
+    print("7. Recommend Movies")
+    print("8. Exit")
 
     choice = input("Enter your choice: ")
 
@@ -176,6 +217,9 @@ while True:
         movies_by_genre()
 
     elif choice == "7":
+       recommend_movies()
+
+    elif choice == "8":
         print("Thank you for using the system!")
         break
     else:
