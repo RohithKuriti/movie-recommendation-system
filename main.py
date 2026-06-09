@@ -60,6 +60,39 @@ def register_user():
     conn.close()
 
     print("User Registered Successfully!")
+def rate_movie():
+    conn = sqlite3.connect("movies.db")
+    cursor = conn.cursor()
+
+    print("\nUsers:")
+    cursor.execute("SELECT * FROM users")
+    for user in cursor.fetchall():
+        print(user)
+
+    user_id = int(input("Enter User ID: "))
+
+    print("\nMovies:")
+    cursor.execute("SELECT * FROM movies")
+    for movie in cursor.fetchall():
+        print(movie)
+
+    movie_id = int(input("Enter Movie ID: "))
+
+    rating = int(input("Enter Rating (1-5): "))
+    review = input("Enter Review: ")
+
+    cursor.execute(
+        """
+        INSERT INTO ratings(user_id, movie_id, rating, review)
+        VALUES(?, ?, ?, ?)
+        """,
+        (user_id, movie_id, rating, review)
+    )
+
+    conn.commit()
+    conn.close()
+
+    print("Rating Added Successfully!")
 while True:
     print("\n===== Movie Recommendation System =====")
     print("1. Add Genre")
@@ -81,7 +114,7 @@ while True:
         register_user()
 
     elif choice == "4":
-        print("Rate Movie Selected")
+        rate_movie()
 
     elif choice == "5":
         print("View Top Rated Movies Selected")
