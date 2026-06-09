@@ -45,7 +45,21 @@ def add_movie():
     conn.close()
 
     print("Movie Added Successfully!")
+def register_user():
+    username = input("Enter Username: ")
 
+    conn = sqlite3.connect("movies.db")
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "INSERT INTO users(username) VALUES(?)",
+        (username,)
+    )
+
+    conn.commit()
+    conn.close()
+
+    print("User Registered Successfully!")
 while True:
     print("\n===== Movie Recommendation System =====")
     print("1. Add Genre")
@@ -64,7 +78,7 @@ while True:
         add_movie()
 
     elif choice == "3":
-        print("Register User Selected")
+        register_user()
 
     elif choice == "4":
         print("Rate Movie Selected")
