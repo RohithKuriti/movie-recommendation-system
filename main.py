@@ -93,6 +93,29 @@ def rate_movie():
     conn.close()
 
     print("Rating Added Successfully!")
+def view_top_rated_movies():
+    conn = sqlite3.connect("movies.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT m.title,
+               AVG(r.rating) as avg_rating
+        FROM movies m
+        JOIN ratings r
+        ON m.movie_id = r.movie_id
+        GROUP BY m.movie_id
+        ORDER BY avg_rating DESC
+    """)
+
+    results = cursor.fetchall()
+
+    print("\n===== Top Rated Movies =====")
+
+    for movie in results:
+        print(f"{movie[0]} -> {movie[1]:.2f}")
+
+    conn.close()
+
 while True:
     print("\n===== Movie Recommendation System =====")
     print("1. Add Genre")
@@ -117,7 +140,7 @@ while True:
         rate_movie()
 
     elif choice == "5":
-        print("View Top Rated Movies Selected")
+        view_top_rated_movies()
 
     elif choice == "6":
         print("Thank you for using the system!")
