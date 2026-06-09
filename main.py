@@ -115,6 +115,35 @@ def view_top_rated_movies():
         print(f"{movie[0]} -> {movie[1]:.2f}")
 
     conn.close()
+def movies_by_genre():
+    conn = sqlite3.connect("movies.db")
+    cursor = conn.cursor()
+
+    print("\nAvailable Genres:")
+
+    cursor.execute("SELECT * FROM genres")
+
+    genres = cursor.fetchall()
+
+    for genre in genres:
+        print(genre)
+
+    genre_id = int(input("Enter Genre ID: "))
+
+    cursor.execute("""
+        SELECT title
+        FROM movies
+        WHERE genre_id = ?
+    """, (genre_id,))
+
+    movies = cursor.fetchall()
+
+    print("\nMovies:")
+
+    for movie in movies:
+        print(movie[0])
+
+    conn.close()
 
 while True:
     print("\n===== Movie Recommendation System =====")
@@ -123,7 +152,8 @@ while True:
     print("3. Register User")
     print("4. Rate Movie")
     print("5. View Top Rated Movies")
-    print("6. Exit")
+    print("6. Movies By Genre")
+    print("7. Exit")
 
     choice = input("Enter your choice: ")
 
@@ -143,8 +173,10 @@ while True:
         view_top_rated_movies()
 
     elif choice == "6":
+        movies_by_genre()
+
+    elif choice == "7":
         print("Thank you for using the system!")
         break
-
     else:
         print("Invalid Choice!")
